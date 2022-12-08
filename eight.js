@@ -62,31 +62,28 @@ function verifyHeight() {
 
 function viewing() {
   let res = [];
-  let prevV = verticals.map(nnn => 0)
-  let prevH = 0; let forH = 0; let forV = 0;
+  let prevH = 0; let prevV = 0; let forH = 0; let forV = 0;
   for(let y = 1; y < last; y++) {
     for(let x = 1; x < last; x++) {
       const val = arr[y][x].height;
-      if(val > arr[y][x-1].height)
-        prevH++;
-      else
-        prevH = 1;
-      if(val > arr[y-1][x].height)
-        prevV[x]++;
-      else
-        prevV[x] = 1;
-      //i think theres a betetr way than repeating this everytime but yolo im too busy
+
+      prevH = (arr[y].slice(0, x).map(nnn => val <= nnn.height).reverse().findIndex(element => element)+1);
+      prevV = (verticals[x].slice(0, y).map(nnn => val <= nnn).reverse().findIndex(element => element)+1);
+
       forH = arr[y].slice(x+1, last+1).map(nnn => val <= nnn.height).findIndex(element => element)+1;
       forV = verticals[x].slice(y+1, last+1).map(nnn => val <= nnn).findIndex(element => element)+1;
       if(forH == 0)
         forH = (last)-x;
       if(forV == 0)
         forV = (last)-y;
+      if(prevH == 0)
+        prevH = x;
+      if(prevV == 0)
+        prevV = y;
       console.log(val);
-      console.log(String(prevH) + " " +String(prevV[x]) + " " +String(forH) + " " +String(forV))
-      res.push(prevH*prevV[x]*forH*forV);
+      console.log(String(prevH) + " " +String(prevV) + " " +String(forH) + " " +String(forV))
+      res.push(prevH*prevV*forH*forV);
     }
-    prevH = 0;
   }
   return Math.max.apply(Math, res);
 }
