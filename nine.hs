@@ -16,8 +16,8 @@ expandMoves _ _ = []
 main :: IO ()
 main = do
   wordList <- getWordsFromFile "input.txt"
-  print((moveRopes (expandMoves wordList []) [] (replicate 2 (0,0))))
-  print((moveRopes (expandMoves wordList []) [] (replicate 10 (0,0))))
+  print(moveRopes (expandMoves wordList []) [] (replicate 2 (0,0)))
+  print(moveRopes (expandMoves wordList []) [] (replicate 10 (0,0)))
 	
 moveRopes :: [String] -> [(Int, Int)] -> [(Int, Int)] -> Int
 moveRopes [] tailList _ = length (Set.fromList tailList)
