@@ -18,20 +18,21 @@ act [] _ _ signals drawing = ((foldr (+) 0 signals), (drawing))
 act ("noop":wordList) cycle strength signals drawing | mod (ncycle-20) 40 == 0 = act wordList ncycle strength (signals++[strength*ncycle]) ndrawing
                                                      | otherwise = act wordList ncycle strength signals ndrawing
                                                      where ncycle = cycle + 1
-                                                           ndrawing = draw drawing 1 (mod cycle 40) (mod (strength-1) 40)
+                                                           ndrawing = draw drawing 1 cycle (mod (strength-1) 40)
 act ("addx":val:wordList) cycle strength signals drawing | curmod == 0 || curmod < mod (cycle-20) 40 = act wordList ncycle nstrength (signals++[strength*spotcycle]) ndrawing
                                                          | otherwise = act wordList ncycle nstrength signals ndrawing
                                                          where ncycle = cycle + 2
                                                                nstrength = strength + (read val :: Int)
                                                                curmod = mod (ncycle-20) 40
                                                                spotcycle = ncycle - curmod
-                                                               ndrawing = draw drawing 2 (mod cycle 40) (mod (strength-1) 40)
+                                                               ndrawing = draw drawing 2 cycle (mod (strength-1) 40)
 
 draw :: [String] -> Int -> Int -> Int -> [String]
 draw drawing 0 _ _ = drawing
 draw drawing iter cycle pos = draw (drawing++[if contained then "#" else "."]) (iter-1) (cycle+1) pos
-                       where contained = cycle >= pos && cycle <= pos+2 --i was doing this wrong way around first but it still worked like rn (except i wasnt doing -1 to strength)
-					 
+                       where cycle_clamp = mod cycle 40
+                             contained = cycle_clamp >= pos && cycle_clamp <= pos+2 --i was doing this wrong way around first but it still worked like rn (except i wasnt doing -1 to strength)
+                     
 fromList :: Int -> [a] -> [[a]] --i did just copy this one
 fromList n = foldr (\v a ->
     case a of
