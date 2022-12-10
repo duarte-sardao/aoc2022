@@ -30,7 +30,7 @@ act ("addx":val:wordList) cycle strength signals drawing | curmod == 0 || curmod
 draw :: [String] -> Int -> Int -> Int -> [String]
 draw drawing 0 _ _ = drawing
 draw drawing iter cycle pos = draw (drawing++[if contained then "#" else "."]) (iter-1) (cycle+1) pos
-                       where contained = cycle >= pos && cycle <= pos+2 --i was doing this wrong way around first but it still worked like rn (except i wasnt doing -1 to strength)
+                       where contained = cycle >= pos && cycle <= pos+2 --i was doing this wrong way around first
 					 
 fromList :: Int -> [a] -> [[a]] --i did just copy this one
 fromList n = foldr (\v a ->
