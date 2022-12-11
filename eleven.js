@@ -49,9 +49,12 @@ function updateItems(items, monkey, worried) {
       item  = item + opval;
     else if(monkey.op == '*')
       item = item * opval;
-    if(!worried)
+    if(!worried) {
       item = Math.floor(item/3);
-    items[i] = item % monkeys[i].testval;
+    } else {
+      item = item % monkeys[i].testval;
+    }
+    items[i] = item
   }
   return items;
 }
@@ -63,9 +66,13 @@ function monkeyBusiness(id, worried) {
     monkey.inspections++;
     let item = monkey.items.shift();
 
+    if(!worried)
+      item = [item]
     item = updateItems(item, monkey, worried);
+    if(!worried)
+      item = item[0]
 
-    if(item[id] == 0)
+    if((worried && item[id] == 0) || !worried && (item % monkey.testval == 0))
       monkeys[monkey.true].items.push(item);
     else
       monkeys[monkey.false].items.push(item);
@@ -94,16 +101,22 @@ void (async () => {
     });
 
     await new Promise((res) => rl.once('close', res));
-    expandItems();
-    //console.log(monkeys);
-    for(let i = 0; i < 10000; i++) {
-      monkeyBusiness(0, true);
+
+    let worried = false;
+    let lim = 20;
+    if(worried)
+      lim = 10000
+
+    if(worried)
+      expandItems();
+    for(let i = 0; i < lim; i++) {
+      monkeyBusiness(0, worried);
+      console.log(monkeys)
     }
     let vals = [];
     for(let i = 0; i < monkeys.length; i++) {
       vals.push(monkeys[i].inspections);
     }
-    //console.log(vals);
     vals = vals.sort(function(a, b){return b - a});
     console.log(vals[0]*vals[1]);
 
