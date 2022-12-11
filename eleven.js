@@ -18,14 +18,14 @@ function handleLine(line, id){
     monkeys.push(monkey)
   } else if(line[2] == "Starting") {
     for(let i = 4; i < line.length; i++) {
-      monkeys[id].items.push(parseInt(line[i].replace(',','')))
+      monkeys[id].items.push(BigInt(parseInt(line[i].replace(',',''))))
     }
   } else if(line[2] == "Operation:") {
     monkeys[id].op = line[6];
     if(line[7] != "old")
-      monkeys[id].opval = parseInt(line[7]);
+      monkeys[id].opval = BigInt(parseInt(line[7]));
   } else if(line[2] == "Test:") {
-    monkeys[id].testval = parseInt(line[5]);
+    monkeys[id].testval = BigInt(parseInt(line[5]));
   } else if(line[5] == "true:") {
     monkeys[id].true = parseInt(line[9]);
   } else if(line[5] == "false:") {
@@ -33,7 +33,7 @@ function handleLine(line, id){
   }
 }
 
-function monkeyBusiness(id) {
+function monkeyBusiness(id, worried) {
   let monkey = monkeys[id];
   let its = monkey.items.length;
   for(let i = 0; i < its; i++) {
@@ -42,13 +42,12 @@ function monkeyBusiness(id) {
     let opval = monkey.opval;
     if(opval == 0)
       opval = item;
-    //console.log("Inspecting " + item);
     if(monkey.op == '+')
       item  = item + opval;
     else if(monkey.op == '*')
       item = item * opval;
-    item = Math.floor(item/3);
-    //console.log("Worry " + item);
+    if(!worried)
+      item = Math.floor(item/3);
     if(item % monkey.testval == 0)
       monkeys[monkey.true].items.push(item);
     else
@@ -56,7 +55,7 @@ function monkeyBusiness(id) {
   }
   id++;
   if(id < monkeys.length) {
-    monkeyBusiness(id);
+    monkeyBusiness(id, worried);
   }
 }
 
@@ -78,8 +77,9 @@ void (async () => {
     });
 
     await new Promise((res) => rl.once('close', res));
-    for(let i = 0; i < 20; i++) {
-      monkeyBusiness(0);
+    for(let i = 0; i < 10000; i++) {
+      monkeyBusiness(0, true);
+      console.log(i);
     }
     let vals = [];
     for(let i = 0; i < monkeys.length; i++) {
