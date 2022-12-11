@@ -102,16 +102,14 @@ void (async () => {
 
     await new Promise((res) => rl.once('close', res));
 
-    let worried = false;
+    let worried = true;
     let lim = 20;
-    if(worried)
+    if(worried) {
       lim = 10000
-
-    if(worried)
       expandItems();
+    }
     for(let i = 0; i < lim; i++) {
       monkeyBusiness(0, worried);
-      console.log(monkeys)
     }
     let vals = [];
     for(let i = 0; i < monkeys.length; i++) {
