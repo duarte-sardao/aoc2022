@@ -63,21 +63,30 @@ function buildgraph() {
   }
 }
 
-function bfs(moves) {
-  while(true) {
+function bfs(moves, hiking=false) {
+  let botts = [];
+  while(moves.length > 0) {
     const move = moves.shift();
     const code = move[0];
-    const dist = move[1];
+    let dist = move[1];
     if(nodes[code].target)
-      return dist;
+      if(!hiking)
+        return dist;
+      else
+        return [dist, botts];
     for(const node in nodes[code].children) {
       let child = nodes[code].children[node];
       if(!nodes[child].visited) {
         nodes[child].visited = true;
+        if(hiking && nodes[child].value == 0) {
+          dist = 0;
+          botts.push(child);
+        }
         moves.push([child, dist+1]);
       }
     }
   }
+  return [Number.MAX_SAFE_INTEGER, botts];
 }
 
 function reset() {
@@ -93,10 +102,19 @@ function findBestHike() {
       options.push(code(nodes[n].x, nodes[n].y));
     }
   }
-  while(true) {
+  console.log(options);
+  let min = Number.MAX_SAFE_INTEGER;
+  while(options.length > 0) {
     reset();
     const start = options.shift();
+    console.log("Starting at: " + start);
+    nodes[start].visited = true;
+    let res = bfs([[start,0]], false);
+    if(res < min) {
+      min = res;
+    }
   }
+  return min;
 }
 
 void (async () => {
