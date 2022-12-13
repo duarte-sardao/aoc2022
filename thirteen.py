@@ -1,4 +1,5 @@
 import json
+import functools
 
 score = 0
 
@@ -44,3 +45,13 @@ for i in range(0,len(s), 2):
     score += res
 
 print(score)
+
+s.append([[2]])
+s.append([[6]])
+
+def cmpwrap(x,y):
+    return compare(2, x,y) - 1
+
+s.sort(key=functools.cmp_to_key(cmpwrap), reverse=True)
+
+print((s.index([[2]])+1)*(s.index([[6]])+1))
