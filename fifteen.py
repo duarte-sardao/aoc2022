@@ -1,12 +1,33 @@
 import re
 
-lim = 20
+lim = 4000000
 ranges = {}
 
 def thebigapple(xo, yo, xt, yt):
     return abs(xo-xt) + abs(yo-yt)
 
-
+def update_range(ranges, limback, limfront):
+    update = False
+    for j in range(len(ranges)):
+        rng = ranges[j]
+        if(limback >= rng[0] and limfront <= rng[1]):
+            update = True
+            break
+        elif(limback < rng[0] and limfront > rng[1]):
+            ranges[j] = (limback, limfront)
+            update = True
+            break
+        elif(limback < rng[0] and limfront <= rng[1] and limfront >= rng[0]-1):
+            ranges[j] = (limback, rng[1])
+            update = True
+            break
+        elif(limback >= rng[0] and limback <= rng[1]+1 and limfront > rng[1]):
+            ranges[j] = (rng[0], limfront)
+            update = True
+            break
+    if(not update):
+        ranges.append((limback,limfront))
+    return ranges
 
 def fillout(pos,dist):
     for i in range(pos[0]-dist,pos[0]+dist+1):
@@ -15,29 +36,8 @@ def fillout(pos,dist):
         diff = abs(i-pos[0])
         limback = max(0, pos[1]-dist+diff)
         limfront = min(lim, pos[1]+dist-diff)
-        if(i == 14):
-            print(str(limback) + " " + str(limfront))
         try:
-            update = False
-            for j in range(len(ranges[i])):
-                rng = ranges[i][j]
-                if(limback >= rng[0] and limfront <= rng[1]):
-                    update = True
-                    break
-                elif(limback < rng[0] and limfront > rng[1]):
-                    ranges[i][j] = (limback, limfront)
-                    update = True
-                    break
-                elif(limback < rng[0] and limfront <= rng[1] and limfront >= rng[0]):
-                    ranges[i][j] = (limback, rng[1])
-                    update = True
-                    break
-                elif(limback >= rng[0] and limback <= rng[1] and limfront > rng[1]):
-                    ranges[i][j] = (rng[0], limfront)
-                    update = True
-                    break
-            if(not update):
-                ranges[i].append((limback,limfront))
+            ranges[i] = update_range(ranges[i],limback, limfront)
         except KeyError:
             ranges[i] = [(limback,limfront)]
 
@@ -60,4 +60,27 @@ for i in range(len(s)):
     dist = thebigapple(blah[0],blah[1],blah[2],blah[3])
     fillout((blah[0],blah[1]),dist)
 
-print(ranges)
+def get_code(key, lst):
+
+    baaah = min(lst[0][1]+1, lst[1][1]+1)
+    print("It's at " + str(key)+ " "+str(baaah))
+    print(key*4000000+baaah)
+
+for key in ranges:
+    print(key)
+    curlen = len(ranges[key])
+    start = ranges[key]
+    while(True):
+        if(len(ranges[key]) == 1):
+            break
+        first = ranges[key][0]
+        ranges[key] = ranges[key][1:]
+        ranges[key] = update_range(ranges[key],first[0],first[1])
+        nlen = len(ranges[key])
+        if(curlen == 2 and nlen == 2):
+            get_code(key, ranges[key])
+            break
+        else:
+            curlen = nlen
+    if(curlen == 2):
+        break
